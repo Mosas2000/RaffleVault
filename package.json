@@ -6,7 +6,12 @@
     "scripts": {
         "compile": "hardhat compile",
         "test": "hardhat test",
-        "clean": "hardhat clean"
+        "test:unit": "hardhat test test/unit/**/*.ts",
+        "test:integration": "hardhat test test/integration/**/*.ts",
+        "coverage": "hardhat coverage",
+        "clean": "hardhat clean",
+        "deploy:sepolia": "hardhat run scripts/deploy/deploy.ts --network baseSepolia",
+        "deploy:mainnet": "hardhat run scripts/deploy/deploy.ts --network baseMainnet"
     },
     "keywords": [
         "raffle",
