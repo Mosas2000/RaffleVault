@@ -1,16 +1,19 @@
 'use client'
 
+import { useState } from 'react'
 import { useParams } from 'next/navigation'
 import { Header } from '../../../components/Header'
 import { useRaffleInfo, useRaffleParticipants } from '../../../hooks/useRaffleData'
 import { formatEther } from 'viem'
 import { useAccount } from 'wagmi'
 import Link from 'next/link'
+import { BuyTicketsModal } from '../../../components/BuyTicketsModal'
 
 export default function RafflePage() {
     const params = useParams()
     const address = params.address as `0x${string}`
     const { address: userAddress } = useAccount()
+    const [showBuyModal, setShowBuyModal] = useState(false)
 
     const { data: raffleInfo, isLoading } = useRaffleInfo(address)
     const { data: participants } = useRaffleParticipants(address)
@@ -160,13 +163,18 @@ export default function RafflePage() {
                                     />
                                 </div>
                                 <button
+                                    onClick={() => setShowBuyModal(true)}
                                     className={`w-full py-3 rounded-lg font-semibold transition-colors ${isActive
                                             ? 'bg-blue-600 hover:bg-blue-700 text-white'
                                             : 'bg-gray-700 text-gray-400 cursor-not-allowed'
                                         }`}
-                                    disabled={!isActive}
+                                    disabled={!isActive || !userAddress}
                                 >
-                                    {isActive ? 'Buy Tickets' : 'Raffle Ended'}
+                                    {!userAddress
+                                        ? 'Connect Wallet'
+                                        : isActive
+                                            ? 'Buy Tickets'
+                                            : 'Raffle Ended'}
                                 </button>
                             </div>
                         </div>
@@ -201,6 +209,20 @@ export default function RafflePage() {
                         </div>
                     </div>
                 </div>
+
+                {showBuyModal && (
+                    <BuyTicketsModal
+                        raffleAddress={address}
+                        ticketPrice={ticketPrice}
+                        maxTickets={maxTickets}
+                        totalTicketsSold={totalTicketsSold}
+                        onClose={() => setShowBuyModal(false)}
+                        onSuccess={() => {
+                            // Refresh the page data
+                            window.location.reload()
+                        }}
+                    />
+                )}
             </main>
         </div>
     )
