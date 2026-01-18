@@ -106,8 +106,11 @@ contract RaffleFactory is Ownable, Pausable {
         uint256 _duration,
         uint256 _minimumTickets
     ) external payable whenNotPaused returns (address raffleAddress) {
-        // Create new raffle contract
-        Raffle newRaffle = new Raffle{value: msg.value}(
+        // Clone implementation (massive gas savings!)
+        raffleAddress = Clones.clone(raffleImplementation);
+        
+        // Initialize the clone
+        Raffle(raffleAddress).initialize{value: msg.value}(
             msg.sender,
             _ticketPrice,
             _maxTickets,
@@ -115,8 +118,6 @@ contract RaffleFactory is Ownable, Pausable {
             _minimumTickets,
             platformWallet
         );
-        
-        raffleAddress = address(newRaffle);
         
         // Store raffle address
         allRaffles.push(raffleAddress);
