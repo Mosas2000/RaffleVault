@@ -259,8 +259,10 @@ contract Raffle is ReentrancyGuard, Pausable, Ownable {
         }
         
         // Update ticket counts
-        ticketCount[msg.sender] += _amount;
-        totalTicketsSold += _amount;
+        unchecked {
+            ticketCount[msg.sender] += _amount;
+            totalTicketsSold += _amount;
+        }
         
         emit TicketPurchased(msg.sender, _amount, totalTicketsSold);
     }
