@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 16, "column": 0}, "map": {"version":3,"sources":["file:///Users/macosbigsur/Documents/Code/Base-Project/RaffleVault/frontend/app/providers.tsx"],"sourcesContent":["'use client'\n\nimport { QueryClient, QueryClientProvider } from '@tanstack/react-query'\nimport { WagmiProvider } from 'wagmi'\nimport { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit'\nimport { config } from '@/config/wagmi'\nimport '@rainbow-me/rainbowkit/styles.css'\nimport { useState } from 'react'\n\nexport function Providers({ children }: { children: React.ReactNode }) {\n    const [queryClient] = useState(() => new QueryClient())\n\n    return (\n        <WagmiProvider config={config}>\n            <QueryClientProvider client={queryClient}>\n                <RainbowKitProvider theme={darkTheme()}>\n                    {children}\n                </RainbowKitProvider>\n            </QueryClientProvider>\n        </WagmiProvider>\n    )\n}\n"],"names":[],"mappings":";;;;;AAEA;AAAA;AACA;AACA;AAAA;;;;;;AAGA;AAPA;;;;;;;;AASO,SAAS,UAAU,EAAE,QAAQ,EAAiC;IACjE,MAAM,CAAC,YAAY,GAAG,IAAA,6NAAQ,EAAC,IAAM,IAAI,wMAAW;IAEpD,qBACI,0PAAC,4KAAa;QAAC,QAAQ;kBACnB,cAAA,0PAAC,yNAAmB;YAAC,QAAQ;sBACzB,cAAA,0PAAC,gNAAkB;gBAAC,OAAO,IAAA,mMAAS;0BAC/B;;;;;;;;;;;;;;;;AAKrB"}}]
+}
