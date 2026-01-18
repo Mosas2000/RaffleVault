@@ -5,3 +5,7 @@ node_modules/
 artifacts/
 cache/
 typechain-types/
+
+# Deployment files
+deployments/*.json
+!deployments/.gitkeep
