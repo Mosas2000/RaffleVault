@@ -8,8 +8,9 @@ const config: HardhatUserConfig = {
     settings: {
       optimizer: {
         enabled: true,
-        runs: 200
-      }
+        runs: 10000000,  // Optimize heavily for deployment cost
+      },
+      viaIR: true,  // Enable IR-based code generation
     }
   },
   networks: {
