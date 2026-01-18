@@ -51,10 +51,13 @@ contract Raffle is ReentrancyGuard, Pausable, Ownable {
     uint256 public constant PLATFORM_FEE = 250;
     
     /// @notice Address that receives platform fees
-    address public immutable platformWallet;
+    address public platformWallet;
     
     /// @notice Current state of the raffle
     RaffleState public state;
+    
+    /// @notice Prevents re-initialization
+    bool private initialized;
     
     // ============ Enums ============
     
@@ -171,26 +174,27 @@ contract Raffle is ReentrancyGuard, Pausable, Ownable {
         _;
     }
     
-    // ============ Constructor ============
+    // ============ Initialization ============
     
     /**
-     * @notice Creates a new raffle
+     * @notice Initialize the raffle (replaces constructor for proxy pattern)
      * @param _creator Address of the raffle creator
      * @param _ticketPrice Price per ticket in wei
-     * @param _maxTickets Maximum number of tickets available
+     * @param _maxTickets Maximum number of tickets
      * @param _duration Duration of the raffle in seconds
-     * @param _minimumTickets Minimum tickets required to be sold
-     * @param _platformWallet Address that receives platform fees
-     * @dev Requires ETH to be sent as the prize amount
+     * @param _minimumTickets Minimum tickets required
+     * @param _platformWallet Platform wallet for fees
      */
-    constructor(
+    function initialize(
         address _creator,
         uint256 _ticketPrice,
         uint256 _maxTickets,
         uint256 _duration,
         uint256 _minimumTickets,
         address _platformWallet
-    ) Ownable(_creator) payable {
+    ) external payable {
+        if (initialized) revert("Already initialized");
+        
         // Validations
         if (_ticketPrice == 0) revert InvalidTicketPrice();
         if (_maxTickets <= 1) revert InvalidMaxTickets();
@@ -198,6 +202,10 @@ contract Raffle is ReentrancyGuard, Pausable, Ownable {
         if (_minimumTickets == 0 || _minimumTickets > _maxTickets) revert InvalidMinimumTickets();
         if (msg.value == 0) revert InvalidPayment();
         
+        // Initialize ownership
+        _transferOwnership(_creator);
+        
+        // Set state variables
         creator = _creator;
         ticketPrice = _ticketPrice;
         maxTickets = _maxTickets;
@@ -206,6 +214,7 @@ contract Raffle is ReentrancyGuard, Pausable, Ownable {
         prizeAmount = msg.value;
         platformWallet = _platformWallet;
         state = RaffleState.Active;
+        initialized = true;
         
         emit RaffleCreated(_creator, _ticketPrice, _maxTickets, endTime);
     }
