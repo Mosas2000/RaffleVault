@@ -17,17 +17,52 @@ A decentralized raffle marketplace built on Base where anyone can create and par
 
 ## Project Structure
 ```
-contracts/
-├── core/         # Main raffle contracts
-├── interfaces/   # Contract interfaces
-└── libraries/    # Reusable libraries
-test/
-├── unit/         # Unit tests
-└── integration/  # Integration tests
-scripts/
-├── deploy/       # Deployment scripts
-└── verify/       # Verification scripts
+RaffleVault/
+├── contracts/              # Smart contracts
+│   ├── core/              # Raffle and RaffleFactory
+│   ├── interfaces/        # Contract interfaces
+│   └── libraries/         # Helper libraries
+├── frontend/              # Next.js frontend application
+│   ├── app/              # Next.js pages
+│   ├── components/       # React components
+│   ├── config/           # Configuration
+│   └── hooks/            # Custom React hooks
+├── test/                  # Smart contract tests
+│   ├── unit/             # Unit tests
+│   └── integration/      # Integration tests
+└── scripts/              # Deployment scripts
 ```
+
+## Getting Started
+
+### Smart Contracts
+```bash
+# Install dependencies
+npm install
+
+# Compile contracts
+npm run compile
+
+# Run tests
+npm test
+
+# Deploy to Base Sepolia
+npm run deploy:sepolia
+```
+
+### Frontend
+```bash
+# Navigate to frontend
+cd frontend
+
+# Install dependencies
+npm install
+
+# Run development server
+npm run dev
+```
+
+See [frontend/README.md](frontend/README.md) for detailed frontend documentation.
 
 ## Development
 
