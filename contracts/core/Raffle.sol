@@ -14,9 +14,17 @@ contract Raffle is ReentrancyGuard, Pausable, Ownable {
     
     // ============ State Variables ============
     
+    // Addresses (20 bytes each)
     /// @notice Address of the raffle creator
     address public creator;
     
+    /// @notice Address of the winner (zero address if not yet selected)
+    address public winner;
+    
+    /// @notice Address that receives platform fees
+    address public platformWallet;
+    
+    // uint256 (32 bytes each)
     /// @notice Price per ticket in wei
     uint256 public ticketPrice;
     
@@ -35,29 +43,25 @@ contract Raffle is ReentrancyGuard, Pausable, Ownable {
     /// @notice Total number of tickets sold
     uint256 public totalTicketsSold;
     
+    /// @notice Platform fee in basis points (250 = 2.5%)
+    uint256 public constant PLATFORM_FEE = 250;
+    
+    // Bools and smaller types (pack together)
+    /// @notice Prevents re-initialization
+    bool private initialized;
+    
+    /// @notice Whether the prize has been claimed by the winner
+    bool public prizeClaimed;
+    
+    /// @notice Current state of the raffle
+    RaffleState public state;
+    
+    // Dynamic types (arrays and mappings last)
     /// @notice Array of all participant addresses
     address[] public participants;
     
     /// @notice Mapping of user address to number of tickets they own
     mapping(address => uint256) public ticketCount;
-    
-    /// @notice Address of the winner (zero address if not yet selected)
-    address public winner;
-    
-    /// @notice Whether the prize has been claimed by the winner
-    bool public prizeClaimed;
-    
-    /// @notice Platform fee in basis points (250 = 2.5%)
-    uint256 public constant PLATFORM_FEE = 250;
-    
-    /// @notice Address that receives platform fees
-    address public platformWallet;
-    
-    /// @notice Current state of the raffle
-    RaffleState public state;
-    
-    /// @notice Prevents re-initialization
-    bool private initialized;
     
     // ============ Enums ============
     
