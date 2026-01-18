@@ -1,11 +1,12 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { Raffle } from "../../typechain-types";
+import { Raffle, RaffleFactory } from "../../typechain-types";
 import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
 import { time } from "@nomicfoundation/hardhat-network-helpers";
 
 describe("Raffle Contract", function () {
     let raffle: Raffle;
+    let raffleFactory: RaffleFactory;
     let creator: SignerWithAddress;
     let platformWallet: SignerWithAddress;
     let buyer1: SignerWithAddress;
@@ -21,16 +22,34 @@ describe("Raffle Contract", function () {
     beforeEach(async function () {
         [creator, platformWallet, buyer1, buyer2, buyer3] = await ethers.getSigners();
 
-        const RaffleFactory = await ethers.getContractFactory("Raffle");
-        raffle = await RaffleFactory.connect(creator).deploy(
-            creator.address,
+        // Deploy RaffleFactory
+        const RaffleFactoryContract = await ethers.getContractFactory("RaffleFactory");
+        raffleFactory = await RaffleFactoryContract.deploy(platformWallet.address, 250);
+
+        // Create a raffle using the factory
+        const tx = await raffleFactory.connect(creator).createRaffle(
             TICKET_PRICE,
             MAX_TICKETS,
             DURATION,
             MINIMUM_TICKETS,
-            platformWallet.address,
             { value: PRIZE_AMOUNT }
         );
+
+        // Get the raffle address from the event
+        const receipt = await tx.wait();
+        const event = receipt?.logs.find((log: any) => {
+            try {
+                return raffleFactory.interface.parseLog(log)?.name === "RaffleCreated";
+            } catch {
+                return false;
+            }
+        });
+
+        const parsedEvent = raffleFactory.interface.parseLog(event as any);
+        const raffleAddress = parsedEvent?.args[0];
+
+        // Get the Raffle contract instance
+        raffle = await ethers.getContractAt("Raffle", raffleAddress);
     });
 
     describe("Deployment", function () {

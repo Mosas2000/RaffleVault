@@ -178,6 +178,14 @@ contract Raffle is ReentrancyGuard, Pausable, Ownable {
         _;
     }
     
+    // ============ Constructor ============
+    
+    /**
+     * @notice Empty constructor for clone pattern
+     * @dev Ownership is set in initialize() function
+     */
+    constructor() Ownable(msg.sender) {}
+    
     // ============ Initialization ============
     
     /**
