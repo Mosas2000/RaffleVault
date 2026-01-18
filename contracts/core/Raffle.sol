@@ -56,6 +56,9 @@ contract Raffle is ReentrancyGuard, Pausable, Ownable {
     /// @notice Current state of the raffle
     RaffleState public state;
     
+    /// @notice Prevents re-initialization
+    bool private initialized;
+    
     // ============ Enums ============
     
     /**
