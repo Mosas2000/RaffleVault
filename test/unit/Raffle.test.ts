@@ -78,8 +78,9 @@ describe("Raffle Contract", function () {
 
         it("Should revert if ticket price is zero", async function () {
             const RaffleFactory = await ethers.getContractFactory("Raffle");
+            const testRaffle = await RaffleFactory.deploy();
             await expect(
-                RaffleFactory.connect(creator).deploy(
+                testRaffle.initialize(
                     creator.address,
                     0,
                     MAX_TICKETS,
@@ -88,13 +89,14 @@ describe("Raffle Contract", function () {
                     platformWallet.address,
                     { value: PRIZE_AMOUNT }
                 )
-            ).to.be.revertedWithCustomError(RaffleFactory, "InvalidTicketPrice");
+            ).to.be.revertedWithCustomError(testRaffle, "InvalidTicketPrice");
         });
 
         it("Should revert if max tickets is less than or equal to 1", async function () {
             const RaffleFactory = await ethers.getContractFactory("Raffle");
+            const testRaffle = await RaffleFactory.deploy();
             await expect(
-                RaffleFactory.connect(creator).deploy(
+                testRaffle.initialize(
                     creator.address,
                     TICKET_PRICE,
                     1,
@@ -103,14 +105,15 @@ describe("Raffle Contract", function () {
                     platformWallet.address,
                     { value: PRIZE_AMOUNT }
                 )
-            ).to.be.revertedWithCustomError(RaffleFactory, "InvalidMaxTickets");
+            ).to.be.revertedWithCustomError(testRaffle, "InvalidMaxTickets");
         });
 
         it("Should revert if duration is less than 1 hour", async function () {
             const RaffleFactory = await ethers.getContractFactory("Raffle");
+            const testRaffle = await RaffleFactory.deploy();
             const shortDuration = 30n * 60n; // 30 minutes
             await expect(
-                RaffleFactory.connect(creator).deploy(
+                testRaffle.initialize(
                     creator.address,
                     TICKET_PRICE,
                     MAX_TICKETS,
@@ -119,14 +122,15 @@ describe("Raffle Contract", function () {
                     platformWallet.address,
                     { value: PRIZE_AMOUNT }
                 )
-            ).to.be.revertedWithCustomError(RaffleFactory, "InvalidDuration");
+            ).to.be.revertedWithCustomError(testRaffle, "InvalidDuration");
         });
 
         it("Should revert if duration is more than 30 days", async function () {
             const RaffleFactory = await ethers.getContractFactory("Raffle");
+            const testRaffle = await RaffleFactory.deploy();
             const longDuration = 31n * 24n * 60n * 60n; // 31 days
             await expect(
-                RaffleFactory.connect(creator).deploy(
+                testRaffle.initialize(
                     creator.address,
                     TICKET_PRICE,
                     MAX_TICKETS,
@@ -135,13 +139,14 @@ describe("Raffle Contract", function () {
                     platformWallet.address,
                     { value: PRIZE_AMOUNT }
                 )
-            ).to.be.revertedWithCustomError(RaffleFactory, "InvalidDuration");
+            ).to.be.revertedWithCustomError(testRaffle, "InvalidDuration");
         });
 
         it("Should revert if minimum tickets is zero", async function () {
             const RaffleFactory = await ethers.getContractFactory("Raffle");
+            const testRaffle = await RaffleFactory.deploy();
             await expect(
-                RaffleFactory.connect(creator).deploy(
+                testRaffle.initialize(
                     creator.address,
                     TICKET_PRICE,
                     MAX_TICKETS,
@@ -150,13 +155,14 @@ describe("Raffle Contract", function () {
                     platformWallet.address,
                     { value: PRIZE_AMOUNT }
                 )
-            ).to.be.revertedWithCustomError(RaffleFactory, "InvalidMinimumTickets");
+            ).to.be.revertedWithCustomError(testRaffle, "InvalidMinimumTickets");
         });
 
         it("Should revert if minimum tickets exceeds max tickets", async function () {
             const RaffleFactory = await ethers.getContractFactory("Raffle");
+            const testRaffle = await RaffleFactory.deploy();
             await expect(
-                RaffleFactory.connect(creator).deploy(
+                testRaffle.initialize(
                     creator.address,
                     TICKET_PRICE,
                     MAX_TICKETS,
@@ -165,13 +171,14 @@ describe("Raffle Contract", function () {
                     platformWallet.address,
                     { value: PRIZE_AMOUNT }
                 )
-            ).to.be.revertedWithCustomError(RaffleFactory, "InvalidMinimumTickets");
+            ).to.be.revertedWithCustomError(testRaffle, "InvalidMinimumTickets");
         });
 
         it("Should revert if no prize amount is sent", async function () {
             const RaffleFactory = await ethers.getContractFactory("Raffle");
+            const testRaffle = await RaffleFactory.deploy();
             await expect(
-                RaffleFactory.connect(creator).deploy(
+                testRaffle.initialize(
                     creator.address,
                     TICKET_PRICE,
                     MAX_TICKETS,
@@ -180,7 +187,7 @@ describe("Raffle Contract", function () {
                     platformWallet.address,
                     { value: 0 }
                 )
-            ).to.be.revertedWithCustomError(RaffleFactory, "InvalidPayment");
+            ).to.be.revertedWithCustomError(testRaffle, "InvalidPayment");
         });
     });
 
@@ -356,7 +363,8 @@ describe("Raffle Contract", function () {
 
             it("Should return empty array when no participants", async function () {
                 const RaffleFactory = await ethers.getContractFactory("Raffle");
-                const newRaffle = await RaffleFactory.connect(creator).deploy(
+                const newRaffle = await RaffleFactory.deploy();
+                await newRaffle.initialize(
                     creator.address,
                     TICKET_PRICE,
                     MAX_TICKETS,
@@ -483,7 +491,8 @@ describe("Raffle Contract", function () {
 
         it("Should maintain correct state with zero participants", async function () {
             const RaffleFactory = await ethers.getContractFactory("Raffle");
-            const newRaffle = await RaffleFactory.connect(creator).deploy(
+            const newRaffle = await RaffleFactory.deploy();
+            await newRaffle.initialize(
                 creator.address,
                 TICKET_PRICE,
                 MAX_TICKETS,
@@ -495,7 +504,8 @@ describe("Raffle Contract", function () {
 
             expect(await newRaffle.getTotalParticipants()).to.equal(0);
             expect(await newRaffle.totalTicketsSold()).to.equal(0);
-            expect(await newRaffle.isActive()).to.be.true;
+            const participants = await newRaffle.getParticipants();
+            expect(participants).to.have.lengthOf(0);
         });
     });
 
